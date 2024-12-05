@@ -6,14 +6,14 @@ load_dotenv(override=True)
 BASE_URL = os.environ.get("BASE_URL")
 
 
-def generate_qr_code(data):
+def gerar_qr_code(lado_camiseta: str):
     qr = QRCode()
-    qr.add_data(data)
+    qr.add_data(f"{BASE_URL}/{lado_camiseta}.html")
     qr.make()
     img = qr.make_image(fill_color="white", back_color="black")
     return img
 
 
-tshirt_side = "back"
-qr_code = generate_qr_code(f"{BASE_URL}/{tshirt_side}.html")
+lado_camiseta = "frente"
+qr_code = gerar_qr_code(lado_camiseta)
 qr_code.show()
