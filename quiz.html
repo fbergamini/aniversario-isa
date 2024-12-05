@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customizable Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .question {
+            margin-bottom: 15px;
+        }
+        .answers label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #video, #image {
+            display: none;
+            margin-top: 20px;
+        }
+        #video video, #image img {
+            max-width: 100%;
+            height: auto;
+        }
+        #submit-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Quiz Time!</h1>
+
+<div id="quiz-container">
+    <!-- Question will be injected here -->
+</div>
+
+<div id="result"></div>
+
+<div id="video">
+    <!-- Replace with your video source -->
+    <video controls>
+        <source src="your-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<div id="image">
+    <!-- Replace with your image source -->
+    <img src="your-image.jpg" alt="Result Image">
+</div>
+
+<script>
+    // Customize your quiz questions and answers here
+    const quizData = [
+        {
+            question: "What is the capital of France?",
+            options: ["Berlin", "Paris", "Rome", "Madrid"],
+            correctAnswer: 1 // Index of the correct option
+        },
+        {
+            question: "Which planet is known as the Red Planet?",
+            options: ["Earth", "Mars", "Jupiter", "Venus"],
+            correctAnswer: 1
+        },
+        // Add more questions as needed
+    ];
+
+    // Customize the passing score (number of correct answers required)
+    const passingScore = 2; // Change this to the desired threshold
+
+    // Variables to keep track of quiz state
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let score = 0;
+
+    // Function to render the current question
+    function renderQuestion() {
+        const quizContainer = document.getElementById('quiz-container');
+        quizContainer.innerHTML = ''; // Clear previous content
+
+        if (currentQuestionIndex < quizData.length) {
+            const item = quizData[currentQuestionIndex];
+
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+
+            const questionTitle = document.createElement('p');
+            questionTitle.textContent = 'Question ' + (currentQuestionIndex + 1) + ': ' + item.question;
+            questionDiv.appendChild(questionTitle);
+
+            const answersDiv = document.createElement('div');
+            answersDiv.classList.add('answers');
+
+            item.options.forEach((option, optionIndex) => {
+                const label = document.createElement('label');
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'question';
+                radioInput.value = optionIndex;
+                label.appendChild(radioInput);
+                label.appendChild(document.createTextNode(option));
+                answersDiv.appendChild(label);
+            });
+
+            questionDiv.appendChild(answersDiv);
+            quizContainer.appendChild(questionDiv);
+
+            // Add submit button
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submit-button';
+            submitButton.textContent = 'Submit Answer';
+            submitButton.onclick = submitAnswer;
+            quizContainer.appendChild(submitButton);
+
+        } else {
+            // Quiz finished, calculate score and display result
+            calculateScore();
+        }
+    }
+
+    // Function to handle answer submission
+    function submitAnswer() {
+        const selectedOption = document.querySelector('input[name="question"]:checked');
+        if (selectedOption) {
+            const answer = parseInt(selectedOption.value);
+            userAnswers.push(answer);
+
+            // Check if the answer is correct
+            if (answer === quizData[currentQuestionIndex].correctAnswer) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            renderQuestion(); // Render next question or results
+        } else {
+            alert('Please select an answer before proceeding.');
+        }
+    }
+
+    // Function to calculate score and display result
+    function calculateScore() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = 'You scored ' + score + ' out of ' + quizData.length + '.';
+
+        if (score >= passingScore) {
+            // Display the video
+            document.getElementById('video').style.display = 'block';
+            document.getElementById('image').style.display = 'none';
+        } else {
+            // Display the image
+            document.getElementById('image').style.display = 'block';
+            document.getElementById('video').style.display = 'none';
+        }
+    }
+
+    // Initialize the quiz on page load
+    window.onload = renderQuestion;
+</script>
+
+</body>
+</html>
