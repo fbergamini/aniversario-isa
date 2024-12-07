@@ -1,238 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Material Design Quiz</title>
-    <!-- Import Google Icon Font and Materialize CSS via CDN -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <!-- Set viewport for mobile responsiveness -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-    <style>
-        /* Ensure the quiz container fills the screen */
-        html, body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            background-color: #f5f5f5;
-        }
-
-        #quiz-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        /* Center the result and media */
-        #result, #video, #image {
-            text-align: center;
-        }
-
-        /* Hide the result and media by default */
-        #result, #video, #image {
-            display: none;
-        }
-
-        /* Style for the question number */
-        .question-number {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        /* Adjust radio button size */
-        .with-gap [type="radio"]:not(:checked) + span,
-        .with-gap [type="radio"]:checked + span {
-            padding-left: 35px;
-        }
-
-        /* Fullscreen video and image */
-        #video video, #image img {
-            width: 100%;
-            max-height: 70vh;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tente do outro lado</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: white; /* Set background color to white */
+    }
+    .fit-image {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
-
-    <!-- Quiz Container -->
-    <div id="quiz-container" class="container">
-        <!-- Content will be injected here -->
-    </div>
-
-    <!-- Result Section -->
-    <div id="result" class="section">
-        <h4>Your Score:</h4>
-        <p id="score-text"></p>
-    </div>
-
-    <!-- Video Section -->
-    <div id="video" class="section">
-        <!-- Replace with your video source -->
-        <div class="video-container">
-            <video controls>
-                <source src="your-video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </div>
-    </div>
-
-    <!-- Image Section -->
-    <div id="image" class="section">
-        <!-- Replace with your image source -->
-        <img src="your-image.jpg" alt="Result Image" class="responsive-img">
-    </div>
-
-    <!-- Import Materialize JavaScript and dependencies via CDN -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Note: jQuery is required by Materialize JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-    <script>
-        // Customize your quiz questions and answers here
-        const quizData = [
-            {
-                question: "What is the capital of France?",
-                options: ["Berlin", "Paris", "Rome", "Madrid"],
-                correctAnswer: 1 // Index of the correct option
-            },
-            {
-                question: "Which planet is known as the Red Planet?",
-                options: ["Earth", "Mars", "Jupiter", "Venus"],
-                correctAnswer: 1
-            },
-            // Add more questions as needed
-        ];
-
-        // Customize the passing score (number of correct answers required)
-        const passingScore = 2; // Change this to the desired threshold
-
-        // Variables to keep track of quiz state
-        let currentQuestionIndex = 0;
-        let userAnswers = [];
-        let score = 0;
-
-        // Function to render the current question
-        function renderQuestion() {
-            const quizContainer = document.getElementById('quiz-container');
-            quizContainer.innerHTML = ''; // Clear previous content
-
-            if (currentQuestionIndex < quizData.length) {
-                const item = quizData[currentQuestionIndex];
-
-                const questionDiv = document.createElement('div');
-                questionDiv.classList.add('section');
-
-                // Question number and text
-                const questionNumber = document.createElement('h5');
-                questionNumber.classList.add('question-number');
-                questionNumber.textContent = 'Question ' + (currentQuestionIndex + 1);
-                questionDiv.appendChild(questionNumber);
-
-                const questionText = document.createElement('p');
-                questionText.classList.add('flow-text');
-                questionText.textContent = item.question;
-                questionDiv.appendChild(questionText);
-
-                // Answer options
-                const answersDiv = document.createElement('form');
-                answersDiv.classList.add('answers');
-
-                item.options.forEach((option, optionIndex) => {
-                    const p = document.createElement('p');
-                    p.classList.add('with-gap');
-
-                    const label = document.createElement('label');
-                    const radioInput = document.createElement('input');
-                    radioInput.type = 'radio';
-                    radioInput.name = 'question';
-                    radioInput.value = optionIndex;
-                    radioInput.classList.add('with-gap');
-
-                    const span = document.createElement('span');
-                    span.textContent = option;
-
-                    label.appendChild(radioInput);
-                    label.appendChild(span);
-                    p.appendChild(label);
-                    answersDiv.appendChild(p);
-                });
-
-                questionDiv.appendChild(answersDiv);
-                quizContainer.appendChild(questionDiv);
-
-                // Add submit button
-                const buttonDiv = document.createElement('div');
-                buttonDiv.classList.add('center-align');
-
-                const submitButton = document.createElement('button');
-                submitButton.classList.add('btn', 'waves-effect', 'waves-light');
-                submitButton.textContent = 'Submit Answer';
-                submitButton.onclick = (e) => {
-                    e.preventDefault();
-                    submitAnswer();
-                };
-                buttonDiv.appendChild(submitButton);
-                quizContainer.appendChild(buttonDiv);
-
-            } else {
-                // Quiz finished, calculate score and display result
-                calculateScore();
-            }
-        }
-
-        // Function to handle answer submission
-        function submitAnswer() {
-            const selectedOption = document.querySelector('input[name="question"]:checked');
-            if (selectedOption) {
-                const answer = parseInt(selectedOption.value);
-                userAnswers.push(answer);
-
-                // Check if the answer is correct
-                if (answer === quizData[currentQuestionIndex].correctAnswer) {
-                    score++;
-                }
-
-                currentQuestionIndex++;
-                renderQuestion(); // Render next question or results
-            } else {
-                M.toast({html: 'Please select an answer before proceeding.', displayLength: 2000});
-            }
-        }
-
-        // Function to calculate score and display result
-        function calculateScore() {
-            const quizContainer = document.getElementById('quiz-container');
-            quizContainer.style.display = 'none'; // Hide the quiz container
-
-            const resultDiv = document.getElementById('result');
-            const scoreText = document.getElementById('score-text');
-            scoreText.textContent = score + ' out of ' + quizData.length;
-
-            resultDiv.style.display = 'block'; // Show the result
-
-            if (score >= passingScore) {
-                // Display the video
-                document.getElementById('video').style.display = 'block';
-                document.getElementById('image').style.display = 'none';
-            } else {
-                // Display the image
-                document.getElementById('image').style.display = 'block';
-                document.getElementById('video').style.display = 'none';
-            }
-        }
-
-        // Initialize the quiz on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            renderQuestion();
-        });
-    </script>
-
+  <img src="frente.png" alt="Image" class="fit-image">
 </body>
 </html>
